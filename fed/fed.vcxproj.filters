@@ -15,24 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="fed_main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fed_buffer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="raylib.h">
+    <ClInclude Include="fed_buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="raymath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rlgl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="raylibdll.lib">
-      <Filter>Resource Files</Filter>
-    </Library>
   </ItemGroup>
 </Project>
