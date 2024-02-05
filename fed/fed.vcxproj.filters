@@ -26,5 +26,8 @@
     <ClInclude Include="fed_buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="stb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
