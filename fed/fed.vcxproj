@@ -136,6 +136,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fed_buffer.h" />
+    <ClInclude Include="fed_common.h" />
+    <ClInclude Include="stb_ds.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

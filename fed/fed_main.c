@@ -4,7 +4,12 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
+#include "fed_common.h"
+
 #include "fed_buffer.h"
+
+#define STB_DS_IMPLEMENTATION
+#include "stb_ds.h"
 
 /*
 
@@ -15,7 +20,6 @@ TODO:
 
 FedBuffer mainBuffer = { 0 };
 
-char ttf_buffer[1 << 25];
 
 int main() {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -27,17 +31,13 @@ int main() {
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     
 	// Font test stuff
-	TTF_Font* sans = TTF_OpenFont("c:/windows/fonts/calibri.ttf", 128);
+	TTF_Font* sans = TTF_OpenFont("c:/windows/fonts/calibri.ttf", 20);
 	SDL_Color white = { 255, 255, 255 };
 
-	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(sans, "Balls", white);
-	SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
-	SDL_Rect messageRect = { 
-		.x=0,
-		.y=0,
-		.w=surfaceMessage->w,
-		.h=surfaceMessage->h
-	};
+	char buffr[1024] = { 0 };
+	u64 curpos = 0;
+
+	SDL_StartTextInput();
 
 	bool running = true;
 	while (running) {
@@ -47,6 +47,23 @@ int main() {
                 case SDL_QUIT: {
                     running = false;
                 } break;
+				case SDL_TEXTINPUT: {
+					buffr[curpos++] = event.text.text[0];
+				} break;
+				case SDL_KEYDOWN: {
+					switch (event.key.keysym.sym)
+					{
+					case SDLK_BACKSPACE: {
+						curpos--;
+						buffr[curpos] = '\0';
+					} break;
+					case SDLK_RETURN: {
+						buffr[curpos++] = '\n';
+					} break;
+					default:
+						break;
+					}
+				} break;
                 default:
 				break;
 			}
@@ -55,11 +72,29 @@ int main() {
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
 
-		SDL_RenderCopy(renderer, message, NULL, &messageRect);
-        		
+		if (buffr[0]) {
+			SDL_Surface* surfaceMessage = TTF_RenderText_Solid(sans, buffr, white);
+			SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+			SDL_Rect messageRect = {
+				.x = 0,
+				.y = 0,
+				.w = surfaceMessage->w,
+				.h = surfaceMessage->h
+			};
+
+
+			SDL_RenderCopy(renderer, message, NULL, &messageRect);
+
+			SDL_DestroyTexture(message);
+			SDL_FreeSurface(surfaceMessage);
+		}
+
 		SDL_RenderPresent(renderer);
 	}
     
+	TTF_CloseFont(sans);
+	TTF_Quit();
+
 	SDL_Quit();
     
     return 0;
