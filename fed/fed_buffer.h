@@ -1,16 +1,21 @@
 #ifndef _fed_buffer_h
 #define _fed_buffer_h
 
-#include <stddef.h>
+#include "fed_common.h"
+#include "fed_event.h"
 
 typedef struct {
 	char *contents;
-	char *filename;
-	size_t bufferSize;
-	size_t cursorPos;
-} FedBuffer;
+	cstr filename;
+	u64 size;
+	u64 capacity;
+	u64 cursorPos;
+	u64 column;
+	u64 line;
+} Buffer;
 
-int FedBufferOpenFile(FedBuffer *buf, char *path);
-int FedBufferDraw(FedBuffer *buf);
+int buffer_init(Buffer* buf);
+int buffer_open_file(Buffer *buf, cstr path);
+int buffer_handle_event(Buffer* buf, Event ev);
 
 #endif
