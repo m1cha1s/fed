@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -7,9 +8,6 @@
 #include "fed_common.h"
 
 #include "fed_buffer.h"
-
-#define STB_DS_IMPLEMENTATION
-#include "stb_ds.h"
 
 /*
 
@@ -54,8 +52,10 @@ int main() {
 					switch (event.key.keysym.sym)
 					{
 					case SDLK_BACKSPACE: {
-						curpos--;
-						buffr[curpos] = '\0';
+						if (curpos) {
+							curpos--;
+							buffr[curpos] = '\0';
+						}
 					} break;
 					case SDLK_RETURN: {
 						buffr[curpos++] = '\n';
@@ -73,20 +73,38 @@ int main() {
 		SDL_RenderClear(renderer);
 
 		if (buffr[0]) {
-			SDL_Surface* surfaceMessage = TTF_RenderText_Solid(sans, buffr, white);
-			SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
-			SDL_Rect messageRect = {
-				.x = 0,
-				.y = 0,
-				.w = surfaceMessage->w,
-				.h = surfaceMessage->h
-			};
+			u64 line = 0;
+			u64 column = 0;
 
+			u64 xoff = 0;
+			//u64 yoff = 0;
 
-			SDL_RenderCopy(renderer, message, NULL, &messageRect);
+			// This is inefficient!!!
+			for (u64 i = 0; i < strlen(buffr); i++) {
+				if (buffr[i] == '\n') {
+					line++;
+					column = 0;
+					xoff = 0;
+					continue;
+				}
+				SDL_Surface* csurf = TTF_RenderGlyph_LCD(sans, buffr[i], white, (SDL_Color) { 0, 0, 0 });
 
-			SDL_DestroyTexture(message);
-			SDL_FreeSurface(surfaceMessage);
+				SDL_Texture* ctext = SDL_CreateTextureFromSurface(renderer, csurf);
+				SDL_Rect messageRect = {
+					.x = xoff,
+					.y = line * csurf->h,
+					.w = csurf->w,
+					.h = csurf->h
+				};
+
+				column++;
+				xoff += csurf->w;
+
+				SDL_RenderCopy(renderer, ctext, NULL, &messageRect);
+
+				SDL_DestroyTexture(ctext);
+				SDL_FreeSurface(csurf);
+			}
 		}
 
 		SDL_RenderPresent(renderer);
