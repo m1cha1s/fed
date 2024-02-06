@@ -89,6 +89,15 @@ Event platform_update(void) {
 						.key = '\n'
 				}
 			};
+			case SDLK_DELETE: return (Event) {
+				.type = Keybaord,
+					.kEvent = {
+						.CTRL = CTRL,
+						.SHIFT = SHIFT,
+						.ALT = ALT,
+						.key = '\d'
+				}
+			};
 			case SDLK_LCTRL:
 			case SDLK_RCTRL: {
 				CTRL = true;

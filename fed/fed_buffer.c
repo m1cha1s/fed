@@ -63,7 +63,7 @@ static int buffer_insert(Buffer* buf, char c) {
 }
 
 static int buffer_backspace(Buffer* buf) {
-	if (buf->size==0) return 0;
+	if (buf->size == 0 || buf->cursorPos == 0) return 0;
 
 	memmove(buf->contents + buf->cursorPos - 1, buf->contents + buf->cursorPos, buf->size - buf->cursorPos);
 
@@ -74,12 +74,12 @@ static int buffer_backspace(Buffer* buf) {
 }
 
 static int buffer_delete(Buffer* buf) {
-	if (buf->size == 0 && !buf->cursorPos<buf->size) return 0;
+	if (buf->size == buf->cursorPos) return 0;
 
 	memmove(buf->contents + buf->cursorPos, buf->contents + buf->cursorPos+1, buf->size - buf->cursorPos);
 
 	buf->size--;
-	buf->cursorPos--;
+	//buf->cursorPos--;
 
 	return 0;
 }
@@ -92,6 +92,9 @@ int buffer_handle_event(Buffer* buf, Event ev)
 		switch (k) {
 		case '\b':
 			buffer_backspace(buf);
+			break;
+		case '\d':
+			buffer_delete(buf);
 			break;
 		default:
 			buffer_insert(buf, k);
