@@ -95,7 +95,7 @@ Event platform_update(void) {
 						.CTRL = CTRL,
 						.SHIFT = SHIFT,
 						.ALT = ALT,
-						.key = '\d'
+						.key = 127
 				}
 			};
 			case SDLK_LCTRL:

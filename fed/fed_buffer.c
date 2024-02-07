@@ -93,7 +93,7 @@ int buffer_handle_event(Buffer* buf, Event ev)
 		case '\b':
 			buffer_backspace(buf);
 			break;
-		case '\d':
+		case 127:
 			buffer_delete(buf);
 			break;
 		default:
