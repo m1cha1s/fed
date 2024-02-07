@@ -59,7 +59,7 @@ static int buffer_insert(Buffer* buf, char c) {
 
 	buf->contents[buf->cursorPos++] = c;
 	buf->size++;
-
+	return 0;
 }
 
 static int buffer_backspace(Buffer* buf) {

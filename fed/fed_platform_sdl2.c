@@ -218,7 +218,7 @@ int platform_render_buffer(Buffer* b) {
 
 		bool nownl = b->contents[i] == '\n';
 
-		char torend = clast || nownl ? ' ' : b->contents[i];
+		char torend = (clast&&cnow) || nownl ? ' ' : b->contents[i];
 
 		SDL_Surface* csur = TTF_RenderGlyph_LCD(
 			font, 
