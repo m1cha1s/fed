@@ -216,15 +216,15 @@ int platform_render_buffer(Buffer* b) {
 
 		if (i==b->size && !clast) return 0;
 
-		if (i == b->size && !clast);
-		if (b->contents[i] == '\n') {
-			line++;
-			column = 0;
-			xoff = 0;
-			continue;
-		}
+		bool nownl = b->contents[i] == '\n';
 
-		SDL_Surface* csur = TTF_RenderGlyph_LCD(font, cnow && clast ? ' ' : b->contents[i], cnow ? background : foreground, cnow ? foreground : background);
+		char torend = clast || nownl ? ' ' : b->contents[i];
+
+		SDL_Surface* csur = TTF_RenderGlyph_LCD(
+			font, 
+			torend, 
+			cnow ? background : foreground, 
+			cnow ? foreground : background);
 		SDL_Texture* ctex = SDL_CreateTextureFromSurface(renderer, csur);
 
 		SDL_Rect cRect = {
@@ -236,8 +236,14 @@ int platform_render_buffer(Buffer* b) {
 
 		ch = csur->h;
 
-		xoff += csur->w;
-		column++;
+		if (nownl) {
+			line++;
+			column = 0;
+			xoff = 0;
+		} else {
+			xoff += csur->w;
+			column++;
+		}
 
 		SDL_RenderCopy(renderer, ctex, NULL, &cRect);
 
