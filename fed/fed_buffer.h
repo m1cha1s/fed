@@ -5,11 +5,21 @@
 #include "fed_event.h"
 
 typedef struct {
-	char *contents;
-	cstr filename;
+	char *text;
 	u64 size;
 	u64 capacity;
-	u64 cursorPos;
+} Line;
+
+typedef struct {
+	// This stores the whole text buffer
+	Line *lines;
+	u64 size;
+	u64 capacity;
+
+	// This stores the opened files filename
+	cstr filename;
+
+	// This is the cursor data
 	u64 column;
 	u64 line;
 } Buffer;
