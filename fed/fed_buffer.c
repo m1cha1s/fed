@@ -72,7 +72,7 @@ static int buffer_insert_line(Buffer* buf) {
 		printf("[DBG] Expanding lines buffer\n");
 	}
 
-	memmove(buf->lines + buf->line + 1, buf->lines + buf->line, buf->size - buf->line);
+	memmove(buf->lines + buf->line + 1, buf->lines + buf->line, (buf->size - buf->line)*sizeof(Line));
 
 	line_init(&(buf->lines[buf->line]));
 	buf->size++;
