@@ -16,6 +16,8 @@ int buffer_init(Buffer* buf) {
 	buf->column = 0;
 	buf->line = 0;
 
+	buf->max_column = 0;
+
 	return 0;
 }
 
@@ -112,11 +114,13 @@ static int buffer_insert(Buffer* buf, char c) {
 		buf->lines[buf->line - 1].size = buf->column;
 
 		buf->column = 0;
+		buf->max_column = 0;
 		
 		return 0;
 	}
 
 	if (line_insert(&(buf->lines[buf->line]), c, buf->column++)) return -1;
+	buf->max_column = buf->column;
 }
 
 static int buffer_backspace(Buffer* buf) {
@@ -131,12 +135,14 @@ static int buffer_backspace(Buffer* buf) {
 		buffer_remove_line(buf);
 		buf->line--;
 		buf->column = lend;
+		buf->max_column = buf->column;
 
 		return 0;
 	}
 
 	line_remove(&buf->lines[buf->line], buf->column-1);
 	buf->column--;
+	buf->max_column = buf->column;
 	return 0;
 }
 
@@ -187,6 +193,7 @@ int buffer_handle_event(Buffer* buf, Event ev)
 					buf->column = buf->lines[buf->line].size;
 				}
 			} else buf->column--;
+			buf->max_column = buf->column;
 		} break;
 		case Right: {
 			if (buf->column < buf->lines[buf->line].size && buf->size ) buf->column++;
@@ -194,14 +201,40 @@ int buffer_handle_event(Buffer* buf, Event ev)
 				buf->column = 0;
 				buf->line++;
 			}
+			buf->max_column = buf->column;
 		} break;
 		case Up: {
-			
+			if (buf->line) {
+				buf->line--;
+				buf->column = buf->lines[buf->line].size < buf->max_column ?
+					buf->lines[buf->line].size : buf->max_column;
+			}
+		} break;
+		case Down: {
+			if (buf->line+1 < buf->size) {
+				buf->line++;
+				buf->column = buf->lines[buf->line].size < buf->max_column ?
+					buf->lines[buf->line].size : buf->max_column;
+			}
 		} break;
 		default:
 			break;
 		}
-		printf("[DPG] (%d,%d)\n", buf->column, buf->line);
+		printf("[DPG] (%lu,%lu)\n", buf->column, buf->line);
+	} break;
+	case Special: {
+		switch (ev.sEvent) {
+		case Home: {
+			buf->column = 0;
+			buf->max_column = buf->column;
+		} break;
+		case End: {
+			if (buf->size) {
+				buf->column = buf->lines[buf->line].size;
+				buf->max_column = buf->column;
+			}
+		} break;
+		}
 	} break;
 	default:
 		break;

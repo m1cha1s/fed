@@ -128,6 +128,14 @@ Event platform_update(void) {
 				.type = Arrow,
 				.aEvent = Right,
 			};
+			case SDLK_END: return (Event) {
+				.type=Special,
+				.sEvent=End,
+			};
+			case SDLK_HOME: return (Event) {
+				.type = Special,
+					.sEvent = Home,
+			};
 			/*case SDLK_UP: {
 				up = true;
 			} break;

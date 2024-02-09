@@ -22,6 +22,8 @@ typedef struct {
 	// This is the cursor data
 	u64 column;
 	u64 line;
+
+	u64 max_column;
 } Buffer;
 
 int buffer_init(Buffer* buf);
