@@ -31,6 +31,11 @@ static int line_init(Line* l) {
 	return 0;
 }
 
+static int line_free(Line* l) {
+	free(l->text);
+	return 0;
+}
+
 static int line_insert(Line* l, char c, u64 idx) {
 	if (l->size >= l->capacity) {
 		// Expande line buffer
@@ -53,6 +58,19 @@ static int line_insert(Line* l, char c, u64 idx) {
 	l->text[idx] = c;
 	l->size++;
 
+	return 0;
+}
+
+static int line_remove(Line* l, u64 idx) {
+	memmove(l->text + idx, l->text + idx + 1, l->size - idx - 1);
+	l->size--;
+	return 0;
+}
+
+static int buffer_remove_line(Buffer* buf) {
+	line_free(&buf->lines[buf->line]);
+	memmove(buf->lines + buf->line, buf->lines + buf->line + 1, (buf->size - buf->line - 1) * sizeof(Line));
+	buf->size--;
 	return 0;
 }
 
@@ -102,6 +120,23 @@ static int buffer_insert(Buffer* buf, char c) {
 }
 
 static int buffer_backspace(Buffer* buf) {
+
+	if (!buf->column) {
+		if (!buf->line) return 0;
+		u64 lend = buf->lines[buf->line - 1].size;
+		for (u64 i = 0; i < buf->lines[buf->line].size; i++) {
+			line_insert(&buf->lines[buf->line - 1], buf->lines[buf->line].text[i], lend + i);
+		}
+
+		buffer_remove_line(buf);
+		buf->line--;
+		buf->column = lend;
+
+		return 0;
+	}
+
+	line_remove(&buf->lines[buf->line], buf->column-1);
+	buf->column--;
 	return 0;
 }
 
